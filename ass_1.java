@@ -1,6 +1,5 @@
 package ap_ass1;
 
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -11,7 +10,7 @@ public class ass_1 {
 	
 	static Scanner s=new Scanner(System.in);
 
-	static public class vax {
+	public static class vax {
 		 String name;
 		 int doses;
 		 int gap;
@@ -37,19 +36,55 @@ public class ass_1 {
 			vaxs.add(_vaxx);
 		}
 		
+		public static boolean namcheck(String Nm) {
+			for (int i = 0; i < vaxs.size(); i++) {
+				if (vaxs.get(i).name == Nm) {
+					return false;
+				}
+			}
+			return true;
+		}
+		
 		public static void reg_vax_f() {
 			System.out.print("Vaccine Name: ");
 			String _name = s.next();
-			System.out.print("Number of Doses: ");
-			int _doses = s.nextInt();
-			System.out.print("Gap between Doses: ");
-			int _gap = s.nextInt();
-			reg_vax(_name, _doses, _gap);
-			System.out.println("Vaccine Name: " + _name + ", Number of Doses: " + _doses + ", Gap between Doses: " + _gap);
+			if (vax.namcheck(_name)==true) {
+				System.out.print("Number of Doses: ");
+				int _doses = s.nextInt();
+				if (_doses != 1) {
+					System.out.print("Gap between Doses: ");
+					int _gap = s.nextInt();
+					reg_vax(_name, _doses, _gap);
+					System.out.println("Vaccine Name: " + _name + ", Number of Doses: " + _doses + ", Gap between Doses: " + _gap);
+				} else {
+					reg_vax(_name, 1, 0);
+					System.out.println("Vaccine Name: " + _name + ", Number of Doses: " + 1 + ", Gap between Doses: " + 0);
+				}
+			} else {
+				System.out.println("Name must be unique");
+			}
 		}
 		
-		public static void vax_hp() {
-			System.out.print("Enter Vaccine Name: ");
+		public static vax name_search(String nam) {
+			for (int i = 0; i < vaxs.size(); i++) {
+				if (vaxs.get(i).name == nam) {
+					return vaxs.get(i);
+				}
+			}
+			return null;
+		}
+		
+		public static void vax_hp(String v_name) {
+			ArrayList<hp> hospi = new ArrayList<hp>();
+			vax _vax = vax.name_search(v_name);
+			for (slot s : slot.slots) {
+				if (s.vaxx == _vax) {
+					hospi.add(s.hosp);
+				}
+			}
+			for (hp hpi : hospi) {
+				System.out.println(String.format("%06d", hpi.iD) + " " + hpi.name);
+			}
 			
 		}
 //		for (int i = 0; i < hp.hosps.size(); i++) {
@@ -100,6 +135,8 @@ public class ass_1 {
 			hosps.add(_hosp);
 		}
 		
+		
+		
 		public static void reg_hosp_f() {
 			System.out.print("Hospital Name: ");
 			String _name = s.next();
@@ -138,10 +175,10 @@ public class ass_1 {
 	public static class ctz {
 		 String Name;
 		 int age;
-		 static long ID;
+		 long ID;
 		 vax vaxx;
 		 int doses_rcvd;
-		 static slot myslot;
+		 slot myslot;
 		 int status; //0 - registered, 1 - part. vax, 2 - full vax
 		
 		static ArrayList<ctz> ctzns = new ArrayList<ctz>();
@@ -172,13 +209,19 @@ public class ass_1 {
 			int _age = s.nextInt();
 			System.out.print("Unique ID: ");
 			long _ID = s.nextLong();
-			System.out.println("Name: " + _Name + ", Age: " + _age + ", Unique ID: " + String.format("%012d", _ID));
-			if (_age >= 18) {
-				reg_ctz(_Name, _age, _ID, 0);
-				System.out.println("REGISTERED");
+			long lim = 999999999999L;
+			if (_ID <= lim) {
+				System.out.println("Name: " + _Name + ", Age: " + _age + ", Unique ID: " + String.format("%012d", _ID));
+				if (_age >= 18) {
+					reg_ctz(_Name, _age, _ID, 0);
+					System.out.println("REGISTERED");
+				} else {
+					System.out.println("Citizen Must Be Over 18 Years Of Age.");
+				}
 			} else {
-				System.out.println("Citizen Must Be Over 18 Years Of Age.");
+				System.out.println("Invalid ID");
 			}
+			
 		}
 		
 		public static void check_status () {
@@ -233,7 +276,7 @@ public class ass_1 {
 					int _iD = s.nextInt();
 					c.myslot = slot.slots_hp(_iD);
 					if (c.status == 1 && c.myslot.vaxx != c.vaxx) {
-						System.out.println(" Vaccine should match with other dose");
+						System.out.println(" Vaccine should match with prior dose");
 					}
 					else {
 						if (c.status == 0) {
@@ -253,7 +296,34 @@ public class ass_1 {
 					System.out.println(c.Name + " vaccinated with " + c.vaxx.name);
 					}
 				} else if (z == 2) {
-					
+					System.out.print("Enter Vaccine Name: ");
+					String v_name = s.next();
+					vax.vax_hp(v_name);
+					System.out.print("Enter hospital id: ");
+					int _iD = s.nextInt();
+					c.myslot = slot.slots_hp(_iD);
+					if (c.status == 1 && c.myslot.vaxx != c.vaxx) {
+						System.out.println(" Vaccine should match with prior dose");
+					}
+					else {
+						if (c.status == 0) {
+							c.vaxx = c.myslot.vaxx; 
+							c.doses_rcvd ++;
+							if (c.vaxx.doses == 1) {
+								c.status = 2;
+							} else {
+								c.status = 1;
+							}	
+						} else if (c.status == 1){
+							c.doses_rcvd ++;
+							if (c.vaxx.doses == c.doses_rcvd) {
+								c.status = 2;
+							}
+						}
+					System.out.println(c.Name + " vaccinated with " + c.vaxx.name);
+					}
+				} else if (z==3) {
+					System.out.println("Exit");
 				}
 			}
 		}
@@ -301,9 +371,7 @@ public class ass_1 {
 		
 		
 		
-		public static void reg_slot_f() {
-			System.out.print("Hospital ID: ");
-			int _iD = s.nextInt();
+		public static void reg_slot_f(int _iD) {
 			hp _hosp = hp.id_search(_iD);
 			System.out.print("Enter Day Number: ");
 			int _day = s.nextInt();
@@ -394,7 +462,12 @@ public class ass_1 {
 			} else if (m == 3) {
 				ctz.reg_ctz_f();
 			} else if (m == 4) {
-				slot.reg_slot_f();
+				System.out.print("Hospital ID: ");
+				int _iD = s.nextInt();
+				System.out.print("Enter number of Slots to be added: ");
+				int num = s.nextInt();
+				for (int i = 0; i < num; i++) {
+				slot.reg_slot_f(_iD);}
 			} else if (m == 5) {
 				ctz.book_slot();
 			} else if (m == 6) {
@@ -409,4 +482,5 @@ public class ass_1 {
 	}
 	
 }
+
 
