@@ -1,8 +1,6 @@
-
 import java.util.Random;
 
 class dice {
-    private final int mx = 2;
     private int fase;
 
     public dice() {
@@ -11,12 +9,12 @@ class dice {
 
     public void roll() {
         Random rand = new Random();
-        int curr_faceValue = 1 + rand.nextInt(mx);
+        int curr_faceValue = 1 + rand.nextInt(2);
         setfase(curr_faceValue);
     }
 
     private void setfase(int value) {
-        if (value <= mx) {
+        if (value <= 2) {
             fase = value;
         }
     }
@@ -25,11 +23,5 @@ class dice {
         return fase;
     }
 
-    public int getmx() {
-        return mx;
-    }
-
-    public String toString() {
-        return ("dice gave " + fase);
-    }
+    
 }
