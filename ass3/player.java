@@ -91,30 +91,27 @@ class player {
             System.out.println("Total points: " + pts);
             nextRoll();
         } else if (newflr.equals("f")) {
-            System.out.println("player position Floor- " + flr+ "\r\n" + name + " has reached The Final Floor"+ "\r\n" + "Total points: " + pts+ "\r\n" + "Game over" );
-            System.out.println(name + " accumulated " + pts + " points.");
+		System.out.println("player position Floor- " + flr+ "\r\n" + name + " has reached The Final Floor"+ "\r\n" + "Total points: " + pts+ "\r\n" + "Game over" + "\r\n" + name + " accumulated " + pts + " points.");
         }
     }
 
     public String typ(int cs) {
-    	
-	        switch (cs) {
-	            case 2: {
+	            if (cs==2) {
 	                return ("e");
 	            }
-	            case 5: {
+	            else if (cs == 5) {
 	                return ("s");
 	            }
-	            case 8: {
+	            else if (cs == 8)  {
 	                return ("l");
 	            }
-	            case 11: {
+	            else if (cs == 11)  {
 	                return ("c");
 	            }
-	            case 13: {
+	            else if (cs == 13)  {
 	                return ("f");
 	            }
-	            default: {
+	            else  {
 	                return ("mt");
 	            }
 	        }
